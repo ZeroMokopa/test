@@ -1,0 +1,115 @@
+import pickle
+import re
+import webbrowser
+def ecport(path,urldic):
+	output = open(path, 'rb+')
+	pickle.dump(urldic, output)
+	output.close()
+
+def load(path):
+	pkl_file = open(path, 'rb')
+	urldic = pickle.load(pkl_file)
+	pkl_file.close()
+
+	return urldic
+def show():
+	print('1、浏览所有记录\n2、查询站点urldic\n3、增加站点记录')
+	print('4、修改站点记录\n5、删除站点记录\n6、退出并保存')
+	print('0、显示菜单\n')
+
+#网站密码记录方法集合类
+class urldicRec(object):
+	"""docstring for urldicRec"""
+	def __init__(self,urldic):
+		super(urldicRec, self).__init__()
+		self.dict = urldic
+
+	def add(self,web,url): 
+		if re.match(r'^((https?)://|(www)\.)[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+([/?].*)?$', url):
+			self.dict.setdefault(web,url)
+			print("合法URL！")
+			print("Add Successful!") 
+		else:
+			print("非法URL！")
+			print("Add Failed!") 
+		
+		
+
+	def delw(self,web): 
+		if web in self.dict:
+			self.dict.pop(web)
+			print('Delete Successful')
+		else:
+			print('No Record about:',web)
+
+	def view(self): 
+		print('All of The Record:')
+		for web in self.dict:
+			print(web,':',self.dict[web])
+
+	def query(self,web):
+		if web in self.dict:
+			print('The URL in ',web,'is:',self.dict[web])
+			s = input('是否访问？（Y/N）')
+			if(s == 'Y') or (s == 'y'):
+				webbrowser.open_new(self.dict[web])
+		else:
+			print('No Record about:',web)
+
+
+	def alter(self,web,url):
+
+		if web in self.dict:
+			if re.match(r'^((https?)://|(www)\.)[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+([/?].*)?$', url):
+				self.dict[web] = url
+				print("合法URL！")
+				print("Alter Successful!") 
+			else:
+				print("非法URL！")
+				print("Alter Failed!") 	
+		else:
+			print('No Record about:',web)
+
+
+if __name__ =='__main__':
+	print('导入密码本...')
+	urldic = load('urlRec.pkl')
+
+	p1 = urldicRec(urldic)
+	print('已导入！')
+	show()
+	'''
+	print('1、浏览所有记录\n2、查询站点url\n3、增加站点记录')
+	print('4、修改站点记录\n5、删除站点记录\n6、退出并保存')
+	print('0、显示菜单\n')
+	'''
+	for i in range(100):
+		s = input('请输入操作选项: ')
+		if (s == '1'):
+			p1.view()
+
+		if (s == '2'):
+			web = input('2、查询站点\n请输入站点名称:' )
+			p1.query(web)
+
+		if (s == '3'):
+			web = input('3、增加站点记录\n请输入站点名:')
+			url = input('请输入URL:')
+			p1.add(web,url)
+
+		if (s == '4'):
+			web = input('4、修改站点记录\n请输入站点名:' )
+			url = input('请输入URL:')
+			p1.alter(web,url)
+
+		if (s == '5'):
+			web = input('5、删除站点记录\n请输入站点名:' )
+			p1.delw(web)
+		
+		if (s == '6'):
+			ecport('urlRec.pkl',p1.dict)
+			print('已保存！')
+			break
+
+		if (s == '0'):
+			show()
